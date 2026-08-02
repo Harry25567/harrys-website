@@ -1,0 +1,117 @@
+body,
+html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+    box-sizing: border-box;
+}
+
+img, video {
+    width: 100%;
+    border-radius: 4px;
+    display: block;
+}
+
+.hero {
+    background-image: url('GreyBackground.png');
+    height: 25vh;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-align: center;
+    position: relative;
+}
+
+.hero-text {
+    font-size: 4em;
+    font-weight: bold;
+}
+
+.topic-title {
+    color: white;
+    font-size: 2em;
+    padding: 0.1em 3em;
+    background-color: rgb(71, 71, 71);
+}
+
+.topic-content {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3em;
+    width: 80%;
+    margin: 3em auto;
+}
+
+.topic-card {
+    background-color: rgb(71, 71, 71);
+    color: white;
+    padding: 1em;
+    border-radius: 0.5em;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
+}
+
+.topic-card-text {
+    font-size: 1.2em;
+    margin-top: 0.8em;
+    margin-bottom: 0.2em;
+    text-align: center;
+}
+
+.footer {
+    background-color: rgb(71, 71, 71);
+    color: white;
+    text-align: right;
+    padding: 3em 3em;
+}
+
+.tabs {
+    background-color: rgb(71, 71, 71);
+    text-align: center;
+    padding: 1em;
+}
+
+.tabs a {
+    color: white;
+    text-decoration: none;
+    margin: 0 1em;
+    padding: 0.5em 1em;
+    background-color: #555;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.tabs a:hover {
+    background-color: #777;
+}
+
+/* Tab logic */
+.tab-section {
+    display: none;
+}
+
+.tab-section:target {
+    display: block;
+}
+
+#home {
+    display: block;
+}
+
+.home-gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3em;
+    width: 70%;
+    margin: 3em auto;
+}
+
+.home-card {
+    background-color: rgb(71, 71, 71);
+    padding: 1em;
+    border-radius: 0.5em;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
+}
