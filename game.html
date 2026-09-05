@@ -1,0 +1,32 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Flappy Burst Preview</title><style>
+html,body{margin:0;height:100%;background:#111;display:grid;place-items:center}
+canvas{width:min(100vw,800px);height:min(100vh,600px);box-shadow:0 0 30px #000}
+</style></head><body><canvas id="c" width="800" height="600"></canvas>
+<script>
+const c=document.getElementById("c"),ctx=c.getContext("2d");
+let started=false,over=false,score=0,best=+localStorage.fbBest||0,burst=1,bt=0,spawn=0,t=0;
+let bird={x:190,y:300,vy:0,r:18},pipes=[];
+function addPipe(x){pipes.push({x,center:150+Math.random()*260,gap:175,scored:false,cleared:false});}
+function start(){started=true;over=false;score=0;burst=1;spawn=0;bird={x:190,y:300,vy:0,r:18};pipes=[];for(let i=0;i<3;i++)addPipe(520+i*270);}
+function flap(){if(!started||over){start();}bird.vy=-390;}
+function clearPipe(){if(!started||over||!burst)return;let p=pipes.find(p=>!p.cleared&&p.x>bird.x);if(p){p.cleared=true;burst=0;bt=.35;}}
+addEventListener("keydown",e=>{if(e.code==="Space"){e.preventDefault();flap()}if(e.code==="KeyE"){e.preventDefault();clearPipe()}});
+addEventListener("pointerdown",e=>{let r=c.getBoundingClientRect(),x=(e.clientX-r.left)*800/r.width,y=(e.clientY-r.top)*600/r.height;if(x>650&&y>520)clearPipe();else flap()});
+function draw(){
+ let g=ctx.createLinearGradient(0,0,0,600);g.addColorStop(0,"#67c7ff");g.addColorStop(1,"#d7f5ff");ctx.fillStyle=g;ctx.fillRect(0,0,800,600);
+ ctx.fillStyle="rgba(255,255,255,.75)";for(const q of [{x:90,y:100,s:1},{x:470,y:150,s:.8},{x:690,y:75,s:.6}]){ctx.beginPath();ctx.arc(q.x,q.y,28*q.s,0,7);ctx.arc(q.x+30*q.s,q.y+5*q.s,22*q.s,0,7);ctx.arc(q.x-25*q.s,q.y+8*q.s,19*q.s,0,7);ctx.fill()}
+ for(const p of pipes){if(p.cleared)continue;ctx.fillStyle="#45a844";ctx.fillRect(p.x,0,70,p.center-p.gap/2);ctx.fillRect(p.x,p.center+p.gap/2,70,550-p.center-p.gap/2);ctx.fillStyle="#62c95b";ctx.fillRect(p.x-7,p.center-p.gap/2-18,84,18);ctx.fillRect(p.x-7,p.center+p.gap/2,84,18)}
+ ctx.fillStyle="#e8c35a";ctx.fillRect(0,550,800,50);ctx.fillStyle="#72b84c";ctx.fillRect(0,550,800,12);
+ ctx.save();ctx.translate(bird.x,bird.y);ctx.rotate(Math.max(-.45,Math.min(1,bird.vy/700)));ctx.fillStyle="#ffd43b";ctx.beginPath();ctx.arc(0,0,18,0,7);ctx.fill();ctx.fillStyle="#f39c12";ctx.beginPath();ctx.moveTo(12,0);ctx.lineTo(31,7);ctx.lineTo(12,11);ctx.closePath();ctx.fill();ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(7,-7,6,0,7);ctx.fill();ctx.fillStyle="#222";ctx.beginPath();ctx.arc(9,-7,2.5,0,7);ctx.fill();ctx.restore();
+ if(bt>0){ctx.strokeStyle=`rgba(120,240,255,${bt/.35})`;ctx.lineWidth=8;ctx.beginPath();ctx.arc(bird.x,bird.y,70+(1-bt/.35)*170,0,7);ctx.stroke()}
+ ctx.textAlign="center";ctx.fillStyle="#fff";ctx.strokeStyle="#1d3557";ctx.lineWidth=5;ctx.font="bold 46px Arial";ctx.strokeText(score,400,65);ctx.fillText(score,400,65);
+ ctx.textAlign="left";ctx.font="bold 20px Arial";ctx.fillStyle="#17324d";ctx.fillText("BEST: "+best,20,35);ctx.fillText("BURST: "+(burst?"READY":"CHARGING"),20,62);
+ if(!started){ctx.fillStyle="rgba(0,0,0,.38)";ctx.fillRect(0,0,800,550);ctx.fillStyle="#fff";ctx.textAlign="center";ctx.font="bold 48px Arial";ctx.fillText("FLAPPY BURST",400,210);ctx.font="24px Arial";ctx.fillText("SPACE / CLICK = FLAP",400,270);ctx.fillText("E = ENERGY BURST",400,305);ctx.font="bold 28px Arial";ctx.fillText("CLICK TO START",400,370)}
+ if(over){ctx.fillStyle="rgba(0,0,0,.45)";ctx.fillRect(0,0,800,550);ctx.fillStyle="#fff";ctx.textAlign="center";ctx.font="bold 52px Arial";ctx.fillText("GAME OVER",400,245);ctx.font="28px Arial";ctx.fillText(`Score: ${score}   Best: ${best}`,400,295);ctx.fillText("CLICK or SPACE TO RESTART",400,350)}
+}
+let last=performance.now();
+function loop(now){let dt=Math.min((now-last)/1000,.033);last=now;t+=dt;if(started&&!over){bird.vy=Math.min(bird.vy+1050*dt,650);bird.y+=bird.vy*dt;spawn+=dt;if(spawn>1.65){addPipe(840);spawn=0}for(const p of pipes){p.x-=230*dt;if(!p.scored&&p.x+65<bird.x){p.scored=true;score++;if(score%5===0)burst=1}}pipes=pipes.filter(p=>p.x>-100);for(const p of pipes){if(p.cleared)continue;let ix=bird.x+bird.r>p.x&&bird.x-bird.r<p.x+70,hit=bird.y-bird.r<p.center-p.gap/2||bird.y+bird.r>p.center+p.gap/2;if(ix&&hit)over=true}if(bird.y-bird.r<0||bird.y+bird.r>550)over=true;if(over){best=Math.max(best,score);localStorage.fbBest=best}}bt=Math.max(0,bt-dt);draw();requestAnimationFrame(loop)}
+requestAnimationFrame(loop);
+</script></body></html>
